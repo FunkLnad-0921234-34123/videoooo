@@ -2,6 +2,11 @@
 """
 تولید script.js از assets.json (که از Release خوانده شده)
 لینک‌ها از jsDelivr ساخته می‌شوند تا در مرورگر پخش شوند.
+
+پشتیبانی از سه ساختار assets.json:
+  1) {"assets": [{"name": ..., "url": ...}, ...]}
+  2) [{"name": ..., "url": ...}, ...]
+  3) ["filename.mp4", "filename2.mp4", ...]
 """
 import os
 import re
@@ -20,7 +25,11 @@ TAG = os.environ.get("TAG", "latest")
 VIDEO_EXTS = {".mp4", ".webm", ".ogg", ".mov", ".m4v"}
 
 
+# =========================================================
+#  HELPERS
+# =========================================================
 def pretty_title(slug: str) -> str:
+    """python-j1 → Python J1"""
     s = slug.replace("_", " ").replace("-", " ")
     return " ".join(w.capitalize() for w in s.split())
 
@@ -40,7 +49,10 @@ def parse_filename(name: str):
 
 def load_meta():
     if META_FILE.exists():
-        return json.loads(META_FILE.read_text(encoding="utf-8"))
+        try:
+            return json.loads(META_FILE.read_text(encoding="utf-8"))
+        except Exception as e:
+            print(f"⚠️  خطا در خواندن videos-meta.json: {e}")
     return {}
 
 
@@ -51,18 +63,52 @@ def jsdelivr_url(filename: str) -> str:
     return f"https://cdn.jsdelivr.net/gh/{REPO}@{TAG}/{quote(filename)}"
 
 
-def build_video_data():
+# =========================================================
+#  CORE
+# =========================================================
+def load_assets():
+    """assets.json رو می‌خونه و لیست اسم فایل‌ها رو برمی‌گردونه."""
     if not ASSETS_FILE.exists():
         print("❌ assets.json پیدا نشد")
         return []
 
-    assets = json.loads(ASSETS_FILE.read_text(encoding="utf-8"))
-    meta = load_meta()
+    try:
+        raw = json.loads(ASSETS_FILE.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"❌ خطا در خواندن assets.json: {e}")
+        return []
 
+    # نرمال‌سازی
+    if isinstance(raw, dict):
+        assets = raw.get("assets", [])
+    elif isinstance(raw, list):
+        assets = raw
+    else:
+        print("❌ ساختار assets.json ناشناخته")
+        return []
+
+    names = []
+    for a in assets:
+        if isinstance(a, str):
+            names.append(a)
+        elif isinstance(a, dict):
+            n = a.get("name") or a.get("filename") or ""
+            if n:
+                names.append(n)
+
+    return names
+
+
+def build_video_data():
+    names = load_assets()
+    if not names:
+        print("⚠️  هیچ فایلی توی assets پیدا نشد")
+        return []
+
+    meta = load_meta()
     groups = {}
 
-    for a in assets:
-        name = a["name"]
+    for name in names:
         if Path(name).suffix.lower() not in VIDEO_EXTS:
             continue
 
@@ -86,6 +132,7 @@ def build_video_data():
             "_sort": part if (part and part.isdigit()) else "999",
         })
 
+    # مرتب‌سازی پارت‌ها
     result = []
     for g in groups.values():
         g["parts"].sort(key=lambda p: (len(p["_sort"]), p["_sort"]))
@@ -93,10 +140,14 @@ def build_video_data():
             p.pop("_sort", None)
         result.append(g)
 
+    # مرتب‌سازی گروه‌ها
     result.sort(key=lambda g: g["title"].lower())
     return result
 
 
+# =========================================================
+#  TEMPLATE
+# =========================================================
 TEMPLATE = r"""// =========================================================
 //  ⚠️ این فایل خودکار تولید شده — دستی ویرایش نکن
 //  منبع: scripts/generate.py
@@ -123,6 +174,9 @@ const searchInput = document.getElementById('searchInput');
 let currentVideo = null;
 let currentPart = 0;
 
+// =========================================================
+//  رندر کارت‌ها
+// =========================================================
 function renderGrid(list = videos) {
     grid.innerHTML = '';
     if (list.length === 0) {
@@ -154,6 +208,9 @@ function renderGrid(list = videos) {
     });
 }
 
+// =========================================================
+//  باز کردن ویدیو
+// =========================================================
 function openWatch(video) {
     currentVideo = video;
     currentPart = 0;
@@ -190,7 +247,9 @@ function playPart(index) {
     });
 }
 
-function switchPart(index) { playPart(index); }
+function switchPart(index) {
+    playPart(index);
+}
 
 player.addEventListener('ended', () => {
     if (currentVideo && currentPart < currentVideo.parts.length - 1) {
@@ -205,23 +264,39 @@ backBtn.addEventListener('click', () => {
     grid.style.display = 'grid';
 });
 
+// =========================================================
+//  منو
+// =========================================================
 menuBtn.addEventListener('click', () => {
-    if (window.innerWidth < 900) sidebar.classList.toggle('open');
-    else sidebar.classList.toggle('collapsed');
+    if (window.innerWidth < 900) {
+        sidebar.classList.toggle('open');
+    } else {
+        sidebar.classList.toggle('collapsed');
+    }
 });
 
+// =========================================================
+//  جستجو
+// =========================================================
 searchInput.addEventListener('input', (e) => {
     const q = e.target.value.trim().toLowerCase();
     const filtered = videos.filter(v =>
-        v.title.toLowerCase().includes(q) || v.channel.toLowerCase().includes(q)
+        v.title.toLowerCase().includes(q) ||
+        v.channel.toLowerCase().includes(q)
     );
     renderGrid(filtered);
 });
 
+// =========================================================
+//  شروع
+// =========================================================
 renderGrid();
 """
 
 
+# =========================================================
+#  MAIN
+# =========================================================
 def main():
     data = build_video_data()
     js = (TEMPLATE
@@ -230,6 +305,8 @@ def main():
           .replace("__REPO__", REPO))
     OUTPUT.write_text(js, encoding="utf-8")
     print(f"✅ script.js ساخته شد — {len(data)} گروه ویدیو")
+    for g in data:
+        print(f"   • {g['title']}  ({len(g['parts'])} پارت)")
 
 
 if __name__ == "__main__":
