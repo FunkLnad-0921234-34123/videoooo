@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-تولید script.js از assets.json (که از Release خوانده شده)
-لینک‌ها از jsDelivr ساخته می‌شوند تا در مرورگر پخش شوند.
+تولید script.js از assets.json (خوانده‌شده از GitHub Release)
+لینک‌ها از jsDelivr ساخته می‌شن تا در مرورگر پخش بشن.
+
+ساختار jsDelivr برای Release:
+    https://cdn.jsdelivr.net/gh/USER/REPO@TAG/filename
 
 پشتیبانی از سه ساختار assets.json:
   1) {"assets": [{"name": ..., "url": ...}, ...]}
@@ -19,7 +22,7 @@ ASSETS_FILE = ROOT / "assets.json"
 META_FILE = ROOT / "videos-meta.json"
 OUTPUT = ROOT / "script.js"
 
-REPO = os.environ.get("REPO", "user/repo")   # مثل: ali/tube-pages
+REPO = os.environ.get("REPO", "user/repo")   # مثل: ali/videoooo
 TAG = os.environ.get("TAG", "latest")
 
 VIDEO_EXTS = {".mp4", ".webm", ".ogg", ".mov", ".m4v"}
@@ -29,7 +32,6 @@ VIDEO_EXTS = {".mp4", ".webm", ".ogg", ".mov", ".m4v"}
 #  HELPERS
 # =========================================================
 def pretty_title(slug: str) -> str:
-    """python-j1 → Python J1"""
     s = slug.replace("_", " ").replace("-", " ")
     return " ".join(w.capitalize() for w in s.split())
 
@@ -52,7 +54,7 @@ def load_meta():
         try:
             return json.loads(META_FILE.read_text(encoding="utf-8"))
         except Exception as e:
-            print(f"⚠️  خطا در خواندن videos-meta.json: {e}")
+            print(f"⚠️  خطا در videos-meta.json: {e}")
     return {}
 
 
@@ -132,7 +134,6 @@ def build_video_data():
             "_sort": part if (part and part.isdigit()) else "999",
         })
 
-    # مرتب‌سازی پارت‌ها
     result = []
     for g in groups.values():
         g["parts"].sort(key=lambda p: (len(p["_sort"]), p["_sort"]))
@@ -140,7 +141,6 @@ def build_video_data():
             p.pop("_sort", None)
         result.append(g)
 
-    # مرتب‌سازی گروه‌ها
     result.sort(key=lambda g: g["title"].lower())
     return result
 
@@ -264,9 +264,6 @@ backBtn.addEventListener('click', () => {
     grid.style.display = 'grid';
 });
 
-// =========================================================
-//  منو
-// =========================================================
 menuBtn.addEventListener('click', () => {
     if (window.innerWidth < 900) {
         sidebar.classList.toggle('open');
@@ -275,9 +272,6 @@ menuBtn.addEventListener('click', () => {
     }
 });
 
-// =========================================================
-//  جستجو
-// =========================================================
 searchInput.addEventListener('input', (e) => {
     const q = e.target.value.trim().toLowerCase();
     const filtered = videos.filter(v =>
@@ -287,9 +281,6 @@ searchInput.addEventListener('input', (e) => {
     renderGrid(filtered);
 });
 
-// =========================================================
-//  شروع
-// =========================================================
 renderGrid();
 """
 
@@ -298,6 +289,9 @@ renderGrid();
 #  MAIN
 # =========================================================
 def main():
+    print(f"🔧 REPO = {REPO}")
+    print(f"🔧 TAG  = {TAG}")
+
     data = build_video_data()
     js = (TEMPLATE
           .replace("__DATA__", json.dumps(data, ensure_ascii=False, indent=4))
@@ -307,6 +301,8 @@ def main():
     print(f"✅ script.js ساخته شد — {len(data)} گروه ویدیو")
     for g in data:
         print(f"   • {g['title']}  ({len(g['parts'])} پارت)")
+        for p in g["parts"]:
+            print(f"      → {p['src']}")
 
 
 if __name__ == "__main__":
