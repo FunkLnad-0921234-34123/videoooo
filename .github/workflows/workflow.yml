@@ -41,12 +41,11 @@ jobs:
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "📦 TAG = $TAG"
 
-          # دریافت JSON خام (بدون -q) تا آرایه معتبر بمونه
           gh release view "$TAG" --json assets > assets.json
 
-          echo "--- محتوای assets.json ---"
+          echo "--- assets.json ---"
           cat assets.json
-          echo "--------------------------"
+          echo "-------------------"
 
       - name: Generate script.js
         env:
