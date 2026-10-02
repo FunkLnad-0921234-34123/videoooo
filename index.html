@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tube</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="header">
+    <div class="header-right">
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="منو">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+        </button>
+        <a href="#" class="logo">
+            <svg viewBox="0 0 24 24" width="30" height="30"><path fill="#ff0000" d="M23.5 6.2c-.3-1.1-1.1-1.9-2.2-2.2C19.4 3.5 12 3.5 12 3.5s-7.4 0-9.3.5c-1.1.3-1.9 1.1-2.2 2.2C0 8.1 0 12 0 12s0 3.9.5 5.8c.3 1.1 1.1 1.9 2.2 2.2 1.9.5 9.3.5 9.3.5s7.4 0 9.3-.5c1.1-.3 1.9-1.1 2.2-2.2.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>
+            <span>Tube</span>
+        </a>
+    </div>
+
+    <div class="header-center">
+        <div class="search-box">
+            <input type="text" placeholder="جستجو..." id="searchInput">
+            <button class="search-btn" aria-label="جستجو">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 1 0-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="header-left">
+        <button class="icon-btn" aria-label="اعلان‌ها">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.1-1.6-5.6-4.5-6.3V4a1.5 1.5 0 1 0-3 0v.7C7.6 5.4 6 7.9 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+        </button>
+    </div>
+</header>
+
+<!-- ============ LAYOUT ============ -->
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <nav>
+            <a href="#" class="nav-item active">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>خانه</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                <span>محبوب‌ها</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm.5-13H11v6l5.2 3.1.8-1.3-4.5-2.7V7z"/></svg>
+                <span>تاریخچه</span>
+            </a>
+            <hr>
+            <a href="#" class="nav-item">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M20 8h-2.8l-2.2-3H9l-2.2 3H4v12h16V8zM9.6 6h4.8l1.5 2H8.1l1.5-2z"/></svg>
+                <span>ویدیوها</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="main">
+
+        <!-- WATCH (پلیر) -->
+        <section class="watch" id="watch" style="display:none;">
+            <div class="watch-player">
+                <video id="player" controls playsinline></video>
+            </div>
+            <div class="watch-info">
+                <h1 id="watchTitle">عنوان ویدیو</h1>
+                <div class="watch-meta">
+                    <span id="watchViews"></span>
+                    <span id="watchParts"></span>
+                </div>
+                <div class="parts-bar" id="partsBar"></div>
+                <button class="btn-back" id="backBtn">← بازگشت به لیست</button>
+            </div>
+        </section>
+
+        <!-- GRID -->
+        <section class="grid" id="grid"></section>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
