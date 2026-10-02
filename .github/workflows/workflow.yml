@@ -39,14 +39,14 @@ jobs:
             TAG=$(gh release view --json tagName -q .tagName)
           fi
           echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "📦 TAG = $TAG"
 
-          # دانلود assets در قالب JSON
-          gh release view "$TAG" --json assets \
-            -q '.assets[] | {name: .name, url: .url}' \
-            > assets.json
+          # دریافت JSON خام (بدون -q) تا آرایه معتبر بمونه
+          gh release view "$TAG" --json assets > assets.json
 
-          echo "📦 assets.json ساخته شد"
+          echo "--- محتوای assets.json ---"
           cat assets.json
+          echo "--------------------------"
 
       - name: Generate script.js
         env:
