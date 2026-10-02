@@ -7,13 +7,13 @@
 const videos = [
     {
         "id": "mohammadafk1",
-        "title": "Mohammad Afk 1",
-        "channel": "Purple",
+        "title": "داستان هیروبراین",
+        "channel": "Mohammad AFK",
         "views": "0 بازدید",
         "parts": [
             {
                 "name": "کامل",
-                "src": "https://cdn.jsdelivr.net/gh/FunkLnad-0921234-34123/videoooo@video/mohammad-afk-1.mp4"
+                "src": "https://cdn.jsdelivr.net/gh/aghabanafshi-alt56/video@video/mohammad-afk-1.mp4"
             }
         ]
     }
