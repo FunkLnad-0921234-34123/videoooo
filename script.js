@@ -1,14 +1,14 @@
 // =========================================================
 //  ⚠️ این فایل خودکار تولید شده — دستی ویرایش نکن
 //  منبع: scripts/generate.py
-//  Release: video  |  Repo: FunkLnad-0921234-34123/videoooo
+//  Release: video  |  Repo: aghabanafshi-alt56/video
 // =========================================================
 
 const videos = [
     {
         "id": "mohammadafk1",
-        "title": "داستان هیروبراین",
-        "channel": "Mohammad AFK",
+        "title": "Mohammad Afk 1",
+        "channel": "Purple",
         "views": "0 بازدید",
         "parts": [
             {
@@ -127,9 +127,6 @@ backBtn.addEventListener('click', () => {
     grid.style.display = 'grid';
 });
 
-// =========================================================
-//  منو
-// =========================================================
 menuBtn.addEventListener('click', () => {
     if (window.innerWidth < 900) {
         sidebar.classList.toggle('open');
@@ -138,9 +135,6 @@ menuBtn.addEventListener('click', () => {
     }
 });
 
-// =========================================================
-//  جستجو
-// =========================================================
 searchInput.addEventListener('input', (e) => {
     const q = e.target.value.trim().toLowerCase();
     const filtered = videos.filter(v =>
@@ -150,7 +144,4 @@ searchInput.addEventListener('input', (e) => {
     renderGrid(filtered);
 });
 
-// =========================================================
-//  شروع
-// =========================================================
 renderGrid();
